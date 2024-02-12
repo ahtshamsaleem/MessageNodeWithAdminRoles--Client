@@ -1,4 +1,4 @@
-import axios from 'axios';
+import  axios  from '../../util/axiosInstance';
 import React, { useEffect, useState } from 'react';
 
 import Post from '../../components/Feed/Post/Post';
@@ -29,7 +29,7 @@ const Feed = (props) => {
 
     useEffect(() => {
         async function getStatus() {
-            const { data } = await axios.get(`http://localhost:8080/auth/status`, { headers: { Authorization: 'Bearer ' + props.token }});
+            const { data } = await axios.get(`/auth/status`, { headers: { Authorization: 'Bearer ' + props.token }});
             setState(prev => ({...prev, status: data.status}));
             
         
@@ -37,6 +37,8 @@ const Feed = (props) => {
         getStatus();
 
     }, [])
+
+    console.log(state.posts)
 
 // LOAD FEED POSTS
     const loadPosts = async (direction) => {
@@ -47,7 +49,7 @@ const Feed = (props) => {
         }
 
         try {
-            const { data } = await axios.get( `http://localhost:8080/feed/posts?page=${page}`, { headers: { Authorization: 'Bearer ' + props.token } } );
+            const { data } = await axios.get( `/feed/posts?page=${page}`, { headers: { Authorization: 'Bearer ' + props.token } } );
             setState((prevState) => ({ ...prevState, posts: data.posts, totalPosts: data.totalItems, postsLoading: false, }));
         } catch (error) {
             const errorMsg = errorMsgHandler(error);
@@ -59,7 +61,7 @@ const Feed = (props) => {
     const statusUpdateHandler = async (event) => {
         event.preventDefault();
 
-        const res = await axios.patch(`http://localhost:8080/auth/status`, {status: state.status}, {headers: { Authorization: 'Bearer ' + props.token }})
+        const res = await axios.patch(`/auth/status`, {status: state.status}, {headers: { Authorization: 'Bearer ' + props.token }})
         console.log(res);
 
 
@@ -100,9 +102,9 @@ const Feed = (props) => {
         try {
 
             if (state.editPost) {
-                resData = await axios.put( `http://localhost:8080/feed/post/${state.editPost._id}`, formData, { headers: { Authorization: `Bearer ${props.token}`, }, } );
+                resData = await axios.put( `/feed/post/${state.editPost._id}`, formData, { headers: { Authorization: `Bearer ${props.token}`, }, } );
             } else {
-                resData = await axios.post( `http://localhost:8080/feed/post`, formData, { headers: { Authorization: `Bearer ${props.token}`, }, } );
+                resData = await axios.post( `/feed/post`, formData, { headers: { Authorization: `Bearer ${props.token}`, }, } );
             }
 
             const post = { _id: resData.data.post._id, title: resData.data.post.title, content: resData.data.post.content, creator: resData.data.post.creator, createdAt: resData.data.post.createdAt, };
@@ -137,7 +139,7 @@ const Feed = (props) => {
         setState(prev => ({ ...prev, postsLoading: true }));
 
         try {
-            const res = await axios.delete(`http://localhost:8080/feed/post/${postId}`, {headers: { Authorization: `Bearer ${props.token}` }});
+            const res = await axios.delete(`/feed/post/${postId}`, {headers: { Authorization: `Bearer ${props.token}` }});
             setState((prevState) => {
             const updatedPosts = prevState.posts.filter( (p) => p._id !== postId );
             return { ...prevState, posts: updatedPosts, postsLoading: false, };

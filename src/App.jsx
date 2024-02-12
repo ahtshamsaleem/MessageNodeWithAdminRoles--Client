@@ -1,7 +1,7 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { Route, Navigate, Routes, useNavigate, Link } from 'react-router-dom';
-import { withRouter } from './util/withRouter';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, useNavigate, Link } from 'react-router-dom';
+
+import axios from './util/axiosInstance'
 
 import Layout from './components/Layout/Layout';
 import Backdrop from './components/Backdrop/Backdrop';
@@ -79,7 +79,7 @@ const App = (props) => {
         setState(prev => ({...prev, authLoading: true }));
         
         try {
-            const {data} = await axios.post('http://localhost:8080/auth/login', {email, password});
+            const {data} = await axios.post('/auth/login', {email, password});
             console.log(data)
             setState(prev => ({...prev, isAuth: true, token: data.token, authLoading: false, userId: data.userId }));
 
@@ -176,7 +176,7 @@ const signupHandler = async ({email, password, name}) => {
     setState(prev => ({...prev, authLoading: true }));
 
     try {
-        const res = await axios.put('http://localhost:8080/auth/signup', { email, password, name });
+        const res = await axios.put('/auth/signup', { email, password, name });
         setState(prev => ({...prev, isAuth: false, authLoading: false }));
         navigate('/');
         

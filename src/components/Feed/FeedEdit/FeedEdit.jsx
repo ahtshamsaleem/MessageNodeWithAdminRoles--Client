@@ -42,11 +42,11 @@ const FeedEdit = (props) => {
     const prevState = useRef();
 
 
-
+    console.log(props)
 
 
     useEffect(() => {
-        console.log(props.editing)
+        console.log(prevState)
         if (
             props.editing &&
             prevProps.current.editing !== props.editing &&
@@ -60,7 +60,7 @@ const FeedEdit = (props) => {
                 },
                 image: {
                     ...prevState.current.postForm.image,
-                    value: props.selectedPost.imagePath,
+                    value: props.selectedPost.imageURL,
                     valid: true,
                 },
                 content: {
@@ -69,7 +69,8 @@ const FeedEdit = (props) => {
                     valid: true,
                 },
             };
-            setState({...state, postForm: postForm, formIsValid: true });
+            console.log(postForm)
+            setState(prev => ({...prev, postForm: postForm, formIsValid: true }));
         }
 
         prevProps.current = {...props}

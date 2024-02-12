@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../../util/axiosInstance';
 
 import Image from '../../../components/Image/Image';
 import './SinglePost.css';
@@ -16,27 +16,31 @@ const SinglePost = (props) => {
 
     const { postId } = useParams();
 
-    useEffect(async () => {
-        try {
-            const res = await axios.get(`http://localhost:8080/feed/post/${postId}`, {headers: {
-            Authorization: `Bearer ${props.token}`
-            }});
-            if (res.status !== 200) {
-                throw new Error('Failed to fetch status');
+    useEffect(() => {
+        const singlePost = async () => {
+            try {
+                const res = await axios.get(`/feed/post/${postId}`, {headers: {
+                Authorization: `Bearer ${props.token}`
+                }});
+                if (res.status !== 200) {
+                    throw new Error('Failed to fetch status');
+                }
+                
+                setState({
+                    title: res.data.post.title,
+                    author: res.data.post.creator.name,
+                    image: `${axios.defaults.baseURL}/` + res.data.post.imageUrl,
+                    date: new Date(res.data.post.createdAt).toLocaleDateString( 'en-US' ),
+                    content: res.data.post.content,
+                });
+                
+            } catch (error) {
+                console.log(error);
+                
             }
-
-            setState({
-                title: res.post.title,
-                author: res.post.creator.name,
-                image: 'http://localhost:8080/' + res.post.imageUrl,
-                date: new Date(res.post.createdAt).toLocaleDateString( 'en-US' ),
-                content: res.post.content,
-            });
-            
-        } catch (error) {
-            console.log(error);
-            
         }
+
+        singlePost();
     }, []);
 
 
@@ -91,7 +95,7 @@ const SinglePost = (props) => {
 
 
     // useEffect(() => {
-    //     fetch('http://localhost:8080/feed/post/' + postId)
+    //     fetch('/feed/post/' + postId)
     //         .then((res) => {
     //             console.log(res);
     //             if (res.status !== 200) {
@@ -105,7 +109,7 @@ const SinglePost = (props) => {
     //             setState({
     //                 title: resData.post.title,
     //                 author: resData.post.creator.name,
-    //                 image: 'http://localhost:8080/' + resData.post.imageUrl,
+    //                 image: '/' + resData.post.imageUrl,
     //                 date: new Date(resData.post.createdAt).toLocaleDateString(
     //                     'en-US'
     //                 ),
