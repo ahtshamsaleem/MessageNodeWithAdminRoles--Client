@@ -15,9 +15,10 @@ const mainNavigation = props => (
         <Logo />
       </NavLink>
     </div>
+    {props.isAuth ? <h5 className='role'> ROLE : {props?.role?.toUpperCase()}</h5> : null}
     <div className="spacer" />
     <ul className="main-nav__items">
-      <NavigationItems isAuth={props.isAuth} onLogout={props.onLogout} />
+      <NavigationItems isAuth={props.isAuth} onLogout={props.onLogout}  role = {props.role}/>
     </ul>
   </nav>
 );

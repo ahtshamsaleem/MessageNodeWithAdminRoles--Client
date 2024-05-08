@@ -19,12 +19,18 @@ const post = props => (
       <Button mode="flat" link={props.id}>
         View
       </Button>
-      <Button mode="flat" onClick={props.onStartEdit}>
+      {
+        props.role !== 'client' ? 
+        <Button mode="flat" onClick={props.onStartEdit}>
         Edit
-      </Button>
-      <Button mode="flat" design="danger" onClick={props.onDelete}>
+      </Button> : null
+      }
+      {
+        props.role !== 'client' ? 
+        <Button mode="flat" design="danger" onClick={props.onDelete}>
         Delete
-      </Button>
+      </Button> : null
+      }
     </div>
   </article>
 );

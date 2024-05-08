@@ -36,9 +36,11 @@ const Feed = (props) => {
         }
         getStatus();
 
+        
     }, [])
-
-    console.log(state.posts)
+    
+    console.log(props.role);
+   // console.log(state.posts)
 
 // LOAD FEED POSTS
     const loadPosts = async (direction) => {
@@ -173,9 +175,11 @@ const Feed = (props) => {
                     <Button mode='flat' type='submit'>Update</Button>
                 </form>
             </section>
+            {props.role !== 'client' ? 
             <section className='feed__control'>
-                <Button mode='raised' design='accent' onClick={newPostHandler}> New Post </Button>
-            </section>
+                <Button mode='raised' design='accent' onClick={newPostHandler}   >  New Post </Button>
+            </section> :
+            null}
             <section className='feed'>
                 {state.postsLoading && (
                     <div style={{ textAlign: 'center', marginTop: '2rem' }}>
@@ -193,7 +197,7 @@ const Feed = (props) => {
                         currentPage={state.postPage}
                     >
                         {state.posts?.map((post) => (
-                            <Post key={post._id} id={post._id} author={post.creator.name} date={new Date( post.createdAt ).toLocaleDateString('en-US')} title={post.title} image={post.imageUrl} content={post.content} onStartEdit={() => startEditPostHandler(post._id) } onDelete={() => deletePostHandler(post._id)} />
+                            <Post key={post._id} id={post._id} author={post.creator.name} date={new Date( post.createdAt ).toLocaleDateString('en-US')} title={post.title} image={post.imageUrl} content={post.content} onStartEdit={() => startEditPostHandler(post._id) } onDelete={() => deletePostHandler(post._id)} role={props.role}/>
                         ))}
                     </Paginator>
                 )}

@@ -14,8 +14,10 @@ import SinglePostPage from './pages/Feed/SinglePost/SinglePost';
 import LoginPage from './pages/Auth/Login';
 import SignupPage from './pages/Auth/Signup';
 import './App.css';
+import Users from './pages/Users/Users';
 
 const App = (props) => {
+    const navigate = useNavigate();
     const [state, setState] = useState({
         showBackdrop: false,
         showMobileNav: false,
@@ -24,10 +26,13 @@ const App = (props) => {
         userId: null,
         authLoading: false,
         error: null,
+        role: null
     });
 
-    const navigate = useNavigate()
 
+    
+
+    
     useEffect(() => {
         const token = localStorage.getItem('token');
         const expiryDate = localStorage.getItem('expiryDate');
@@ -39,10 +44,14 @@ const App = (props) => {
             return;
         }
         const userId = localStorage.getItem('userId');
+        const role = localStorage.getItem('role');
         const remainingMilliseconds =
             new Date(expiryDate).getTime() - new Date().getTime();
-        setState({...state, isAuth: true, token: token, userId: userId });
         setAutoLogout(remainingMilliseconds);
+        
+        
+        setState({...state, isAuth: true, token: token, userId: userId, role: role });
+
     }, []);
 
 
@@ -62,10 +71,12 @@ const App = (props) => {
     };
 
     const logoutHandler = () => {
-        setState({...state, isAuth: false, token: null });
+        setState({...state, isAuth: false, token: null, role: null });
         localStorage.removeItem('token');
         localStorage.removeItem('expiryDate');
         localStorage.removeItem('userId');
+
+        return navigate('/');
     };
 
 
@@ -81,10 +92,11 @@ const App = (props) => {
         try {
             const {data} = await axios.post('/auth/login', {email, password});
             console.log(data)
-            setState(prev => ({...prev, isAuth: true, token: data.token, authLoading: false, userId: data.userId }));
+            setState(prev => ({...prev, isAuth: true, token: data.token, authLoading: false, userId: data.userId, role:data.role }));
 
             localStorage.setItem('token', data.token);
             localStorage.setItem('userId', data.userId);
+            localStorage.setItem('role', data.role);
             const remainingMilliseconds = 60 * 60 * 1000;
             const expiryDate = new Date( new Date().getTime() + remainingMilliseconds );
             localStorage.setItem('expiryDate', expiryDate.toISOString());
@@ -97,73 +109,6 @@ const App = (props) => {
 
         }
     };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -206,10 +151,6 @@ const signupHandler = async ({email, password, name}) => {
 
 
 
-
-
-
-
     const setAutoLogout = (milliseconds) => {
         setTimeout(() => {
             logoutHandler();
@@ -229,13 +170,16 @@ const signupHandler = async ({email, password, name}) => {
         <Routes>
             <Route path='/' element={ <LoginPage onLogin={loginHandler} loading={state.authLoading} /> } />
             <Route path='/signup' element={ <SignupPage onSignup={signupHandler} loading={state.authLoading} /> } />
+           
+            
         </Routes>
     );
     if (state.isAuth) {
         routes = (
             <Routes>
-                <Route path='/' element={ <FeedPage userId={state.userId} token={state.token} /> } />
-                <Route path='/:postId' element={ <SinglePostPage userId={state.userId} token={state.token} /> } />
+                <Route path='/' element={ <FeedPage userId={state.userId} token={state.token} role={state.role}/> } />
+                <Route path='/:postId' element={ <SinglePostPage userId={state.userId} token={state.token} role={state.token}/> } />
+                <Route path='/users' element={ <Users isAuth={state.isAuth} role={state.role}  token={state.token}/> }/> 
             </Routes>
         );
 
@@ -251,7 +195,7 @@ const signupHandler = async ({email, password, name}) => {
             <Layout 
                 header={
                     <Toolbar>
-                        <MainNavigation onOpenMobileNav={() => mobileNavHandler(true)} onLogout={logoutHandler} isAuth={state.isAuth} />
+                        <MainNavigation onOpenMobileNav={() => mobileNavHandler(true)} onLogout={logoutHandler} isAuth={state.isAuth} role= {state.role}/>
                     </Toolbar>
                 }
                 mobileNav={
